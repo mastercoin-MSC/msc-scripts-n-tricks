@@ -65,8 +65,7 @@ for i in range(len(nonrefkeys)):
 
 pairs = zip(nonrefkeys,sha_keys)
 
-#DEBUG 
-print pairs
+#DEBUG print pairs
 packets = []
 for pair in pairs:
     obpacket = pair[0].upper()[2:-2]
