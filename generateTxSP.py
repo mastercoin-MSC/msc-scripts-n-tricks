@@ -73,18 +73,6 @@ for unspent in unspent_tx:
 
 #real stuff happens here:
 
-broadcast_fee = 0.0001  
-output_minimum = 0.0006 #dust threshold
-
-fee_total = Decimal(0.0001)
-change = largest_spendable_input['amount'] - fee_total
-# calculate change : 
-# (total input amount) - (broadcast fee) - (total transaction fee)
-
-if Decimal(change) < Decimal(0) or fee_total > largest_spendable_input['amount'] and not force:
-    print json.dumps({ "status": "NOT OK", "error": "Not enough funds" , "fix": "Set \'force\' flag to proceed without balance checks" })
-    exit()
-
 #build multisig data address
 transaction_version = 0
 transaction_type = listOptions['transaction_type']
@@ -154,35 +142,33 @@ byte_stream = tx_ver_bytes + tx_type_bytes + eco_bytes + prop_type_bytes + prev_
 import math
 total_packets = int(math.ceil(float(total_bytes)/30)) #get # of packets
 
+total_outs = int(math.ceil(float(total_packets)/2)) #get # of outs
+
 #construct packets
 packets = []
-sequence_number = 1
 index = 0
-for i in range(1,total_packets+1):
+for i in range(total_packets):
     # 2 multisig data addrs per out, 60 bytes per, 2 characters per byte so 60 characters per pass
     parsed_data = byte_stream[index:index+60].rjust(30,"0")
-    if i%3 == 0:
-        sequence_number = sequence_number + 1
-    cleartext_packet =  (hex(sequence_number)[2:].rjust(2,"0") + parsed_data.ljust(60,"0"))
+    cleartext_packet =  (hex(i+1)[2:].rjust(2,"0") + parsed_data.ljust(60,"0"))
 
     index = index+60
     packets.append(cleartext_packet)
-    #DEBUG print [cleartext_packet, parsed_data, sequence_number, i]
+    #DEBUG print ['pax',cleartext_packet, parsed_data, total_packets, i]
 
 
 from_address = listOptions['transaction_from']
-obfuscation_packets = [hashlib.sha256(from_address).hexdigest().upper()[:-2]]  #add first sha of sender to packet list
-for i in range(sequence_number-1): #do rest for seqnums
-    obfuscation_packets.append(hashlib.sha256(obfuscation_packets[i]).hexdigest().upper()[0:-2])
+obfuscation_packets = [hashlib.sha256(from_address).hexdigest().upper()]  #add first sha of sender to packet list
+for i in range(total_packets-1): #do rest for seqnums
+    obfuscation_packets.append(hashlib.sha256(obfuscation_packets[i]).hexdigest().upper())
 
 #DEBUG print [packets,obfuscation_packets, len(obfuscation_packets[0]), len(obfuscation_packets[1]), len(packets[0])]
 
 #obfuscate and prepare multisig outs
 pair_packets = []
-for packet in packets:
-    seqnum = int(packet[0:2])
-    obfuscation_packet = obfuscation_packets[seqnum-1]
-    pair_packets.append((packet, obfuscation_packet))
+for i in range(total_packets):
+    obfuscation_packet = obfuscation_packets[i]
+    pair_packets.append((packets[i], obfuscation_packet[:-2]))
 
 #encode the plaintext packets
 obfuscated_packets = []
@@ -228,13 +214,13 @@ for i in range(len(plaintext_packets)):
     if orig.upper() != plaintext_packets[i]:
         print ['packet did not come out right', orig, plaintext_packets[i] ]
     else:
-        final_packets.append([plaintext_packets[i][0:2],obfuscated_packets[i][0]])
+        final_packets.append(obfuscated_packets[i][0])
 
-#print final_packets
+#DEBUG print plaintext_packets, obfuscation_packets,final_packets
 
 #add key identifier and ecdsa byte to new mastercoin data key
 for i in range(len(final_packets)):
-    obfuscated = '02' + final_packets[i][1] + "00" 
+    obfuscated = '02' + final_packets[i] + "00" 
     #DEBUG print [obfuscated, len(obfuscated)]
     invalid = True
     while invalid:
@@ -242,7 +228,7 @@ for i in range(len(final_packets)):
         #set the last byte to something random in case we generated an invalid pubkey
         potential_data_address = pybitcointools.pubkey_to_address(obfuscated_randbyte)
         if bool(conn.validateaddress(potential_data_address).isvalid):
-            final_packets[i][1] = obfuscated_randbyte
+            final_packets[i] = obfuscated_randbyte
             invalid = False
     #make sure the public key is valid using pybitcointools, if not, regenerate 
     #the last byte of the key and try again
@@ -250,6 +236,16 @@ for i in range(len(final_packets)):
 #DEBUG print final_packets
 
 #### Build transaction
+
+#calculate fees
+fee_total = Decimal(0.0001) + Decimal(0.000055*total_packets+0.000055*total_outs) + Decimal(0.000055)
+change = largest_spendable_input['amount'] - fee_total
+# calculate change : 
+# (total input amount) - (broadcast fee)
+
+if Decimal(change) < Decimal(0) or fee_total > largest_spendable_input['amount'] and not force:
+    print json.dumps({ "status": "NOT OK", "error": "Not enough funds" , "fix": "Set \'force\' flag to proceed without balance checks" })
+    exit()
 
 #retrieve raw transaction to spend it
 prev_tx = conn.getrawtransaction(largest_spendable_input['txid'])
@@ -261,42 +257,36 @@ for output in prev_tx.vout:
             if address == listOptions['transaction_from']:
                 validnextinputs.append({ "txid": prev_tx.txid, "vout": output['n']})
 
-validnextoutputs = { "1EXoDusjGwvnjZUyKkxZ4UHEf77z6A5S4P": 0.00006 }
+validnextoutputs = { "1EXoDusjGwvnjZUyKkxZ4UHEf77z6A5S4P": 0.000055 }
 
-if change > Decimal(0.00006): # send anything above dust to yourself
+if change > Decimal(0.000055): # send anything above dust to yourself
     validnextoutputs[ listOptions['transaction_from'] ] = float(change) 
 
 unsigned_raw_tx = conn.createrawtransaction(validnextinputs, validnextoutputs)
 
 json_tx =  conn.decoderawtransaction(unsigned_raw_tx)
 
-
-# get highest seqnum
-max_seqnum = 0
-for pair in final_packets:
-    if int(pair[0]) > max_seqnum:
-        max_seqnum = int(pair[0])
-
 #append  data structure
-seqnum_ordered_packets = []
-for i in range(max_seqnum):
-    seqnum_ordered_packets.append([])
+ordered_packets = []
+for i in range(total_outs):
+    ordered_packets.append([])
 
 #append actual packet
-for pair in final_packets:
-    seqnum_ordered_packets[int(pair[0])-1].append(pair[1])
+index = 0
+for i in range(total_outs):
+    while len(ordered_packets[i]) < 2 and index != len(final_packets):
+        ordered_packets[i].append(final_packets[index])
+        index = index + 1
+#DEBUG print ordered_packets
 
-#DEBUG print seqnum_ordered_packets
-
-for seqnum in range(1,len(seqnum_ordered_packets)+1):
-    index = seqnum-1
+for i in range(total_outs):
     hex_string = "5141" + pubkey
     asm_string = "1 " + pubkey
     addresses = [ pybitcointools.pubkey_to_address(pubkey)]
-    n_count = len(validnextoutputs)+index
+    n_count = len(validnextoutputs)+i
     total_sig_count = 1
-    #DEBUG print [seqnum,'added string', seqnum_ordered_packets[index]]
-    for packet in seqnum_ordered_packets[index]:
+    #DEBUG print [i,'added string', ordered_packets[i]]
+    for packet in ordered_packets[i]:
         hex_string = hex_string + "21" + packet.lower() 
         asm_string = asm_string + " " + packet.lower()
         addresses.append(pybitcointools.pubkey_to_address(packet))
@@ -304,8 +294,6 @@ for seqnum in range(1,len(seqnum_ordered_packets)+1):
     hex_string = hex_string + "5" + str(total_sig_count) + "ae"
     asm_string = asm_string + " " + str(total_sig_count) + " " + "OP_CHECKMULTISIG"
     #DEBUG print [hex_string, asm_string, addresses,total_sig_count]
-    #if i % 2 == 0:
-    #    print 'added output'
     #add multisig output to json object
     json_tx['vout'].append(
         { 
@@ -317,7 +305,7 @@ for seqnum in range(1,len(seqnum_ordered_packets)+1):
                 "type": "multisig", 
                 "addresses": addresses 
             }, 
-            "value": 0.00006*2, 
+            "value": 0.000055*len(addresses), 
             "n": n_count
         })
 
@@ -365,7 +353,8 @@ for output in json_tx['vout']:
     value_hex = value_hex.rjust(16,"0")
     value_bytes =  [value_hex[ start: start + 2 ].upper() for start in range(0, len(value_hex), 2)][::-1]
     assert len(value_bytes) == 8
-    print output
+    
+   # print output
     scriptpubkey_hex = output['scriptPubKey']['hex']
     scriptpubkey_bytes = [scriptpubkey_hex[start:start + 2].upper() for start in range(0, len(scriptpubkey_hex), 2)]
     len_scriptpubkey = ['%02x' % len(''.join(scriptpubkey_bytes).decode('hex').lower())]
