@@ -58,10 +58,8 @@ for compressedkey in scriptkeys:
     if pybitcointools.pubtoaddr(compressedkey) != reference:
         nonrefkeys.append(compressedkey)
 
-sha_keys = []
+sha_keys = [ hashlib.sha256(reference).digest().encode('hex').upper()]  #first sha256 of ref addr, see class B for more info  
 for i in range(len(nonrefkeys)):
-    if i < len(nonrefkeys):
-        sha_keys.append(hashlib.sha256(reference).digest().encode('hex').upper()) #first sha256 of ref addr, see class B for more info 
     if i < (len(nonrefkeys)-1):
         sha_keys.append(hashlib.sha256(sha_keys[i]).digest().encode('hex').upper()) #keep sha'ing to generate more packets
 
