@@ -21,16 +21,28 @@ listOptions = json.loads(str(''.join(JSON)))
 conn = bitcoinrpc.connect_to_local()
 
 #get transaction to decode multisig addr
-transaction = conn.getrawtransaction(listOptions['transaction'])
+decoderaw = 0
+if listOptions['decoderaw'] != "":
+    decoderaw = 1
+    transaction = conn.decoderawtransaction(listOptions['decoderaw'])
+else:
+    transaction = conn.getrawtransaction(listOptions['transaction'])
 
 #reference/senders address
 reference = listOptions['reference']
 
-#get all multisigs
-multisig_output = []
-for output in transaction.vout:
-    if output['scriptPubKey']['type'] == 'multisig':
-        multisig_output.append(output) #grab msigs
+if decoderaw == 1:
+    #get all multisigs
+    multisig_output = []
+    for output in transaction['vout']:
+        if output['scriptPubKey']['type'] == 'multisig':
+            multisig_output.append(output) #grab msigs
+else:
+    #get all multisigs
+    multisig_output = []
+    for output in transaction.vout:
+        if output['scriptPubKey']['type'] == 'multisig':
+            multisig_output.append(output) #grab msigs
     
 #extract compressed keys
 scriptkeys = []
@@ -55,7 +67,8 @@ for i in range(len(nonrefkeys)):
 
 pairs = zip(nonrefkeys,sha_keys)
 
-#DEBUG print pairs
+#DEBUG 
+print pairs
 packets = []
 for pair in pairs:
     obpacket = pair[0].upper()[2:-2]
