@@ -29,7 +29,7 @@ else:
     transaction = conn.getrawtransaction(listOptions['transaction'])
 
 #reference/senders address
-reference = listOptions['reference']
+print transaction
 
 if decoderaw == 1:
     #get all multisigs
@@ -37,16 +37,17 @@ if decoderaw == 1:
     for output in transaction['vout']:
         if output['scriptPubKey']['type'] == 'multisig':
             multisig_output.append(output) #grab msigs
+    reference = output['scriptPubKey']['addresses'][0]
 else:
     #get all multisigs
     multisig_output = []
     for output in transaction.vout:
         if output['scriptPubKey']['type'] == 'multisig':
             multisig_output.append(output) #grab msigs
-    
+    reference = listOptions['reference']
 #extract compressed keys
 scriptkeys = []
-for output in multisig_output:
+for output in multisig_output:   #seqnums start at 1, so adjust range 
     split_script = output['scriptPubKey']['asm'].split(' ')
     for val in split_script:
         if len(val) == 66:
@@ -55,21 +56,28 @@ for output in multisig_output:
 #filter keys that are ref
 nonrefkeys = []
 for compressedkey in scriptkeys:
-    if pybitcointools.pubtoaddr(compressedkey) != reference:
+    if pybitcointools.pubtoaddr(compressedkey[1]) != reference:
         nonrefkeys.append(compressedkey)
 
+max_seqnum = len(nonrefkeys)
 sha_keys = [ hashlib.sha256(reference).digest().encode('hex').upper()]  #first sha256 of ref addr, see class B for more info  
-for i in range(len(nonrefkeys)):
-    if i < (len(nonrefkeys)-1):
+for i in range(max_seqnum):
+    if i < (max_seqnum-1):
         sha_keys.append(hashlib.sha256(sha_keys[i]).digest().encode('hex').upper()) #keep sha'ing to generate more packets
 
-pairs = zip(nonrefkeys,sha_keys)
+pairs = []
+for i in range(len(nonrefkeys)):
+    pairs.append((nonrefkeys[i], sha_keys[i] ))
+
+#DEBUG 
+#print pairs
 
 #DEBUG print pairs
 packets = []
 for pair in pairs:
     obpacket = pair[0].upper()[2:-2]
     shaaddress = pair[1][:-2]
+    print obpacket, shaaddress
     datapacket = ''
     for i in range(len(obpacket)):
         if obpacket[i] == shaaddress[i]:
