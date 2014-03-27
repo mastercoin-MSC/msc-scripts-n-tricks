@@ -30,6 +30,7 @@ else:
 
 #reference/senders address
 reference = listOptions['reference']
+compressed = listOptions['compressed']
 #print transaction
 
 if decoderaw == 1:
@@ -57,7 +58,7 @@ for output in multisig_output:   #seqnums start at 1, so adjust range
 #filter keys that are ref
 nonrefkeys = []
 for compressedkey in scriptkeys:
-    if pybitcointools.pubtoaddr(compressedkey[1]) != reference:
+    if pybitcointools.pubtoaddr(compressedkey) != reference and pybitcointools.pubtoaddr(compressedkey) != compressed:
         nonrefkeys.append(compressedkey)
 
 max_seqnum = len(nonrefkeys)
@@ -73,7 +74,6 @@ for i in range(len(nonrefkeys)):
 #DEBUG 
 #print pairs
 
-#DEBUG print pairs
 packets = []
 for pair in pairs:
     obpacket = pair[0].upper()[2:-2]
