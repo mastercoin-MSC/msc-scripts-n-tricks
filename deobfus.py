@@ -29,7 +29,8 @@ else:
     transaction = conn.getrawtransaction(listOptions['transaction'])
 
 #reference/senders address
-print transaction
+reference = listOptions['reference']
+#print transaction
 
 if decoderaw == 1:
     #get all multisigs
@@ -37,14 +38,14 @@ if decoderaw == 1:
     for output in transaction['vout']:
         if output['scriptPubKey']['type'] == 'multisig':
             multisig_output.append(output) #grab msigs
-    reference = output['scriptPubKey']['addresses'][0]
+    #reference = output['scriptPubKey']['addresses'][0]
 else:
     #get all multisigs
     multisig_output = []
     for output in transaction.vout:
         if output['scriptPubKey']['type'] == 'multisig':
             multisig_output.append(output) #grab msigs
-    reference = listOptions['reference']
+
 #extract compressed keys
 scriptkeys = []
 for output in multisig_output:   #seqnums start at 1, so adjust range 
