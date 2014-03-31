@@ -87,17 +87,17 @@ property_data = listOptions['property_data']
 number_properties = listOptions['number_properties']
 
 #calculate bytes
-tx_ver_bytes = hex(transaction_version)[2:].rjust(4,"0")
-tx_type_bytes = hex(transaction_type)[2:].rjust(4,"0")
-eco_bytes = hex(ecosystem)[2:].rjust(2,"0")
-prop_type_bytes = hex(property_type)[2:].rjust(4,"0")
-prev_prop_id_bytes = hex(previous_property_id)[2:].rjust(8,"0")
-num_prop_bytes = hex(number_properties)[2:].rjust(16,"0")
-prop_cat_bytes = ''
-prop_subcat_bytes = ''
-prop_name_bytes = ''
-prop_url_bytes = ''
-prop_data_bytes = ''
+tx_ver_bytes = hex(transaction_version)[2:].rjust(4,"0") # 2 bytes
+tx_type_bytes = hex(transaction_type)[2:].rjust(4,"0")   # 2 bytes
+eco_bytes = hex(ecosystem)[2:].rjust(2,"0")              # 1 byte
+prop_type_bytes = hex(property_type)[2:].rjust(4,"0")    # 2 bytes
+prev_prop_id_bytes = hex(previous_property_id)[2:].rjust(8,"0")  # 4 bytes
+num_prop_bytes = hex(number_properties)[2:].rjust(16,"0")        # 8 bytes
+prop_cat_bytes = ''                                      # var bytes
+prop_subcat_bytes = ''                                   # var bytes
+prop_name_bytes = ''                                     # var bytes
+prop_url_bytes = ''                                      # var bytes
+prop_data_bytes = ''                                     # var bytes
 
 for let in property_category:
     prop_cat_bytes = prop_cat_bytes + hex(ord(let))[2:]
@@ -149,7 +149,7 @@ packets = []
 index = 0
 for i in range(total_packets):
     # 2 multisig data addrs per out, 60 bytes per, 2 characters per byte so 60 characters per pass
-    parsed_data = byte_stream[index:index+60].rjust(30,"0")
+    parsed_data = byte_stream[index:index+60].ljust(60,"0")
     cleartext_packet =  (hex(i+1)[2:].rjust(2,"0") + parsed_data.ljust(60,"0"))
 
     index = index+60
