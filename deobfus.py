@@ -78,7 +78,7 @@ packets = []
 for pair in pairs:
     obpacket = pair[0].upper()[2:-2]
     shaaddress = pair[1][:-2]
-    print obpacket, shaaddress
+    print 'Obfus/SHA', obpacket, shaaddress
     datapacket = ''
     for i in range(len(obpacket)):
         if obpacket[i] == shaaddress[i]:
@@ -91,16 +91,29 @@ for pair in pairs:
     packets.append(datapacket)
 
 
-count = 0
+
+long_packet = ''
 for packet in packets:
-    count = count + 1
-    print 'Decoded packet #' + str(count) + ' : ' + packet
-    if count == 1:
-        print 'Seq #?: ' + packet[:2]
-        print 'Tx version: ' + packet[2:6]
-        print 'Tx type: ' + packet[6:10]
-        print 'Currency: ' + packet[10:18]
-        print '\n'
-    else:
-        print 'Seq #?: ' + packet[:2]
-        print '\n'
+    print 'Decoded packet #' + str(packet[0:2]) + ' : ' + packet
+    long_packet += packet[2:]
+
+#DEBUG print long_packet
+print 'Tx version: ' + long_packet[0:4]
+print 'Tx type: ' + long_packet[4:8]
+print 'Ecosystem: ' + long_packet[8:10]
+print 'Property type: ' + long_packet[10:14]
+print 'Previous property id: ' + long_packet[14:22]
+
+spare_bytes = ''.join(long_packet[22:])
+#DEBUG print spare_bytes.split('00')
+print 'Property Category: ' + spare_bytes.split('00')[0].decode('hex')
+
+print 'Property Subcategory: ' + spare_bytes.split('00')[1].decode('hex') 
+print 'Property Name: ' + spare_bytes.split('00')[2].decode('hex')
+print 'Property URL: ' +  spare_bytes.split('00')[3].decode('hex')
+print 'Property Data: ' +  ''.join(spare_bytes.split('00')[4]).decode('hex')
+
+len_var_fields = len(''.join(spare_bytes.split('00')[0:5])+'0000000000')
+#DEBUG print len_var_fields, spare_bytes[len_var_fields:len_var_fields+16],spare_bytes
+print 'Number of Properties: ' + str(int(spare_bytes[len_var_fields:len_var_fields+16],16))
+print '\n'
