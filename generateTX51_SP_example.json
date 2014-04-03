@@ -1,0 +1,18 @@
+{ 
+  "transaction_type": 'type: int, ex: 50',
+  "ecosystem": 'type: int, ex: 1',
+  "property_type": 'type: int, ex: 1',
+  "previous_property_id": 'type: int, ex: 3',
+  "property_category": "type: string, ex: Testing",
+  "property_subcategory": "type: string, ex: Testing Smart Property",
+  "property_name": "type: string, ex: Test Property 1",
+  "property_url": "type: string, ex: mastercoinfoundation.org",
+  "property_data": "type: string, ex: Test Data",
+  "currency_identifier_desired": 'type int, ex: 2',
+  "number_properties": 'type: int, ex: 10',
+  "deadline": 'type: int, ex: 7731439200',
+  "earlybird_bonus": 'type: int, ex: 10',
+  "percentage_for_issuer": 'type: int, ex: 12',
+  "transaction_from": "type: base58",
+  "from_private_key": "type: base58"
+}
