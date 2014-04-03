@@ -98,22 +98,48 @@ for packet in packets:
     long_packet += packet[2:]
 
 #DEBUG print long_packet
-print 'Tx version: ' + long_packet[0:4]
-print 'Tx type: ' + long_packet[4:8]
-print 'Ecosystem: ' + long_packet[8:10]
-print 'Property type: ' + long_packet[10:14]
-print 'Previous property id: ' + long_packet[14:22]
 
-spare_bytes = ''.join(long_packet[22:])
-#DEBUG print spare_bytes.split('00')
-print 'Property Category: ' + spare_bytes.split('00')[0].decode('hex')
+if long_packet[4:8] == '0032':
+    print 'Tx version: ' + long_packet[0:4]
+    print 'Tx type: ' + long_packet[4:8]
+    print 'Ecosystem: ' + long_packet[8:10]
+    print 'Property type: ' + long_packet[10:14]
+    print 'Previous property id: ' + long_packet[14:22]
 
-print 'Property Subcategory: ' + spare_bytes.split('00')[1].decode('hex') 
-print 'Property Name: ' + spare_bytes.split('00')[2].decode('hex')
-print 'Property URL: ' +  spare_bytes.split('00')[3].decode('hex')
-print 'Property Data: ' +  ''.join(spare_bytes.split('00')[4]).decode('hex')
+    spare_bytes = ''.join(long_packet[22:])
+    #DEBUG print spare_bytes.split('00')
+    print 'Property Category: ' + spare_bytes.split('00')[0].decode('hex')
 
-len_var_fields = len(''.join(spare_bytes.split('00')[0:5])+'0000000000')
-#DEBUG print len_var_fields, spare_bytes[len_var_fields:len_var_fields+16],spare_bytes
-print 'Number of Properties: ' + str(int(spare_bytes[len_var_fields:len_var_fields+16],16))
-print '\n'
+    print 'Property Subcategory: ' + spare_bytes.split('00')[1].decode('hex') 
+    print 'Property Name: ' + spare_bytes.split('00')[2].decode('hex')
+    print 'Property URL: ' +  spare_bytes.split('00')[3].decode('hex')
+    print 'Property Data: ' +  ''.join(spare_bytes.split('00')[4]).decode('hex')
+
+    len_var_fields = len(''.join(spare_bytes.split('00')[0:5])+'0000000000')
+    #DEBUG print len_var_fields, spare_bytes[len_var_fields:len_var_fields+16],spare_bytes
+    print 'Number of Properties: ' + str(int(spare_bytes[len_var_fields:len_var_fields+16],16))
+    print '\n'
+else:
+    print 'Tx version: ' + long_packet[0:4]
+    print 'Tx type: ' + long_packet[4:8]
+    print 'Ecosystem: ' + long_packet[8:10]
+    print 'Property type: ' + long_packet[10:14]
+    print 'Previous property id: ' + long_packet[14:22]
+
+    spare_bytes = ''.join(long_packet[22:])
+    #DEBUG print spare_bytes.split('00')
+    print 'Property Category: ' + spare_bytes.split('00')[0].decode('hex')
+
+    print 'Property Subcategory: ' + spare_bytes.split('00')[1].decode('hex') 
+    print 'Property Name: ' + spare_bytes.split('00')[2].decode('hex')
+    print 'Property URL: ' +  spare_bytes.split('00')[3].decode('hex')
+    print 'Property Data: ' +  ''.join(spare_bytes.split('00')[4]).decode('hex')
+
+    len_var_fields = len(''.join(spare_bytes.split('00')[0:5])+'0000000000')
+    #DEBUG print len_var_fields, spare_bytes[len_var_fields:len_var_fields+16],spare_bytes
+    print 'Currency Identifier desired: ' + str(int(spare_bytes[len_var_fields:len_var_fields+8],16))
+    print 'Number of Properties: ' + str(int(spare_bytes[len_var_fields+8:len_var_fields+8+16],16))
+    print 'Deadline: ' + str(int(spare_bytes[len_var_fields+8+16:len_var_fields+8+16+16],16))
+    print 'Earlybird bonus: ' + str(int(spare_bytes[len_var_fields+8+16+16:len_var_fields+8+16+16+2],16))
+    print 'Percentage for issuer: ' + str(int(spare_bytes[len_var_fields+8+16+16+2:len_var_fields+8+16+16+2+2],16))
+    print '\n'
