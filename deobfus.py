@@ -119,7 +119,7 @@ if long_packet[4:8] == '0032':
     #DEBUG print len_var_fields, spare_bytes[len_var_fields:len_var_fields+16],spare_bytes
     print 'Number of Properties: ' + str(int(spare_bytes[len_var_fields:len_var_fields+16],16))
     print '\n'
-else:
+if long_packet[4:8] == '0033':
     print 'Tx version: ' + long_packet[0:4]
     print 'Tx type: ' + long_packet[4:8]
     print 'Ecosystem: ' + long_packet[8:10]
@@ -143,3 +143,9 @@ else:
     print 'Earlybird bonus: ' + str(int(spare_bytes[len_var_fields+8+16+16:len_var_fields+8+16+16+2],16))
     print 'Percentage for issuer: ' + str(int(spare_bytes[len_var_fields+8+16+16+2:len_var_fields+8+16+16+2+2],16))
     print '\n'
+if long_packet[4:8] == '0000':
+    print long_packet
+    print 'Tx version: ' + long_packet[0:4]
+    print 'Tx type: ' + long_packet[4:8]
+    print 'Currency Identifier: ' + long_packet[8:16]
+    print 'Amount to transfer: ' + long_packet[16:32]
