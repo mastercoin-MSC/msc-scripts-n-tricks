@@ -76,7 +76,7 @@ for input_ in unspent_tx:
     total_val += float(input_[1])
 
 #print total_val
-unsigned_raw_tx = conn.createrawtransaction(validnextinputs, { listOptions['transaction_to'] : float(total_val)-0.0002 } )
+unsigned_raw_tx = conn.createrawtransaction(validnextinputs, { listOptions['transaction_to'] : float(total_val)-listOptions['fee'] } )
 signed_transaction = conn.signrawtransaction(unsigned_raw_tx)
 
 #output final product as JSON
