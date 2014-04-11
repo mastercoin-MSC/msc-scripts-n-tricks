@@ -53,7 +53,8 @@ for unspent in unspent_tx:
    available_balance = unspent.amount + available_balance
 
 #check if minimum BTC balance is met
-if available_balance < Decimal(0.0006*3) and not force:
+print available_balance, 0.00006*3
+if available_balance < Decimal(0.00006*3) and not force:
     print json.dumps({ "status": "NOT OK", "error": "Not enough funds" , "fix": "Set \'force\' flag to proceed without balance checks" })
     exit()
 
@@ -81,7 +82,7 @@ change = largest_spendable_input['amount'] - fee_total
 # calculate change : 
 # (total input amount) - (broadcast fee) - (total transaction fee)
 
-if Decimal(change) < Decimal(0) or fee_total > largest_spendable_input['amount'] and not force:
+if (Decimal(change) < Decimal(0) or fee_total > largest_spendable_input['amount']) and not force:
     print json.dumps({ "status": "NOT OK", "error": "Not enough funds" , "fix": "Set \'force\' flag to proceed without balance checks" })
     exit()
 
@@ -90,7 +91,7 @@ if Decimal(change) < Decimal(0) or fee_total > largest_spendable_input['amount']
 from_address = listOptions['transaction_from']
 transaction_type = 0   #simple send
 sequence_number = 1    #packet number
-currency_id = 1        #MSC
+currency_id = int(listOptions['currency'])        #MSC
 amount = int(listOptions['msc_send_amt']*1e8)  #maran's impl used float??
 
 cleartext_packet = ( 
