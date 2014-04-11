@@ -149,3 +149,8 @@ if long_packet[4:8] == '0000':
     print 'Tx type: ' + long_packet[4:8]
     print 'Currency Identifier: ' + long_packet[8:16]
     print 'Amount to transfer: ' + long_packet[16:32]
+if long_packet[4:8] == '0035':
+    print long_packet
+    print 'Tx version: ' + long_packet[0:4]
+    print 'Tx type: ' + long_packet[4:8]
+    print 'Currency Identifier: ' + long_packet[8:16]
