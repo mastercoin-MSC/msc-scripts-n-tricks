@@ -106,18 +106,32 @@ if long_packet[4:8] == '0032':
     print 'Property type: ' + long_packet[10:14]
     print 'Previous property id: ' + long_packet[14:22]
 
-    spare_bytes = ''.join(long_packet[22:])
-    #DEBUG print spare_bytes.split('00')
-    print 'Property Category: ' + spare_bytes.split('00')[0].decode('hex')
+    spare_bytes = []
+    for i in range(0,len(long_packet[22:]),2):
+        spare_bytes.append(long_packet[22:][i] + long_packet[22:][i+1])
+    #DEBUG print spare_bytes
 
-    print 'Property Subcategory: ' + spare_bytes.split('00')[1].decode('hex') 
-    print 'Property Name: ' + spare_bytes.split('00')[2].decode('hex')
-    print 'Property URL: ' +  spare_bytes.split('00')[3].decode('hex')
-    print 'Property Data: ' +  ''.join(spare_bytes.split('00')[4]).decode('hex')
+    prop_cat = ''.join(spare_bytes[0:spare_bytes.index('00')]).decode('hex') 
+    print 'Property Category: ' + prop_cat
 
-    len_var_fields = len(''.join(spare_bytes.split('00')[0:5])+'0000000000')
-    #DEBUG print len_var_fields, spare_bytes[len_var_fields:len_var_fields+16],spare_bytes
-    print 'Number of Properties: ' + str(int(spare_bytes[len_var_fields:len_var_fields+16],16))
+    spare_bytes = spare_bytes[spare_bytes.index('00')+1:]
+    prop_subcat = ''.join(spare_bytes[0:spare_bytes.index('00')]).decode('hex') 
+    print 'Property Subcategory: ' + prop_subcat
+
+    spare_bytes = spare_bytes[spare_bytes.index('00')+1:]
+    prop_name = ''.join(spare_bytes[0:spare_bytes.index('00')]).decode('hex') 
+    print 'Property Name: ' + prop_name
+
+    spare_bytes = spare_bytes[spare_bytes.index('00')+1:]
+    prop_url = ''.join(spare_bytes[0:spare_bytes.index('00')]).decode('hex')
+    print 'Property URL: ' +  prop_url
+
+    spare_bytes = spare_bytes[spare_bytes.index('00')+1:]
+    prop_data = ''.join(spare_bytes[0:spare_bytes.index('00')]).decode('hex') 
+    print 'Property Data: ' +  prop_data
+
+    spare_bytes = ''.join(spare_bytes[spare_bytes.index('00')+1:])
+    print 'Number of Properties: ' + str(int(spare_bytes[0:16],16))
     print '\n'
 if long_packet[4:8] == '0033':
     print 'Tx version: ' + long_packet[0:4]
