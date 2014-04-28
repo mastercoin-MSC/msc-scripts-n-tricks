@@ -1,0 +1,13 @@
+{ 
+  "transaction_from": "{{ BTC address here }}",
+  "transaction_to": "{{ BTC address here }}",
+  "startIndexInput": 0, //Index of input to use
+  "amountOfInput": 0.0003, //Size of input to use
+  "feeSeed": false, // Use fee seeding algorithm (take tx output + 1 and spend them in sequence)
+  "inputTx": "{{ TX Hash to use for input }}",
+  "msc_send_amt": 0.00000001, // Amount of MSC/Currency to send
+  "pubkey": "{{ Pubkey of transaction_from address }}",
+  "wallet": "/home/{{ location of wallet file for armory}}",
+  "currency": 3, //currency ID
+  "rawhex": "" //raw hex, if any
+}
