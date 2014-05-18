@@ -7,6 +7,9 @@ valid[2]='"tcp://obelisk.unsystem.net:8081"'
 valid[3]='"tcp://ottrbutt.com:9091"'
 valid[4]='"tcp://54.187.205.158:9091"'
 ACTIVEINDEX=4
+
+touch /tmp/block_height.tmp
+
 while true
 do
   echo "$(date) Connecting to: $(cat ~/.sx.cfg)"
@@ -47,3 +50,4 @@ do
     echo "{ \"status\": \"UP\", \"last_known_height\": \""$SX_BLOCK"\" , \"heartbeat_timestamp\": \""$(date)"\" }" > $WWW_DIR/sx_conn.json
   fi
 done
+
