@@ -82,6 +82,7 @@ change = largest_spendable_input['amount'] - fee_total
 # calculate change : 
 # (total input amount) - (broadcast fee) - (total transaction fee)
 
+print fee_total, largest_spendable_input['amount']
 if (Decimal(change) < Decimal(0) or fee_total > largest_spendable_input['amount']) and not force:
     print json.dumps({ "status": "NOT OK", "error": "Not enough funds" , "fix": "Set \'force\' flag to proceed without balance checks" })
     exit()

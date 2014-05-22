@@ -53,7 +53,7 @@ for unspent in unspent_tx:
    available_balance = unspent.amount + available_balance
 
 #check if minimum BTC balance is met
-if available_balance < Decimal(0.0006*3) and not force:
+if available_balance < Decimal(0.00006*3) and not force:
     print json.dumps({ "status": "NOT OK", "error": "Not enough funds" , "fix": "Set \'force\' flag to proceed without balance checks" })
     exit()
 
@@ -97,13 +97,7 @@ tx_type_bytes = hex(transaction_type)[2:].rjust(4,"0")   # 2 bytes
 eco_bytes = hex(ecosystem)[2:].rjust(2,"0")              # 1 byte
 prop_type_bytes = hex(property_type)[2:].rjust(4,"0")    # 2 bytes
 prev_prop_id_bytes = hex(previous_property_id)[2:].rjust(8,"0")  # 4 bytes
-
-#set MSB for test eco
-if ecosystem == 2 and currency_identifier_desired != 2:
-    curr_ident_des_bytes = ''.join(['8']+list(hex(currency_identifier_desired)[2:].rjust(8,"0"))[1:])      # 4 bytes
-else:
-    curr_ident_des_bytes = hex(currency_identifier_desired)[2:].rjust(8,"0")      # 4 bytes
-
+curr_ident_des_bytes = hex(currency_identifier_desired)[2:].rjust(8,"0")      # 4 bytes
 num_prop_bytes = hex(number_properties)[2:].rjust(16,"0")# 8 bytes
 deadline_bytes = hex(deadline)[2:].rjust(16,"0")         # 8 bytes
 earlybird_bytes = hex(earlybird_bonus)[2:].rjust(2,"0")        # 1 byte
@@ -115,23 +109,48 @@ prop_url_bytes = ''                                      # var bytes
 prop_data_bytes = ''                                     # var bytes
 
 for let in property_category:
-    prop_cat_bytes = prop_cat_bytes + hex(ord(let))[2:]
+    hex_bytes = hex(ord(let))[2:]
+    if len(hex_bytes) % 2 == 1:
+        hex_bytes = hex_bytes[:len(hex_bytes)-1]
+    if len(hex_bytes) > 255:
+        hex_bytes = hex_bytes[255:]
+    prop_cat_bytes = prop_cat_bytes + hex_bytes
 prop_cat_bytes = prop_cat_bytes + '00'
 
 for let in property_subcategory:
-    prop_subcat_bytes = prop_subcat_bytes + hex(ord(let))[2:]
+    hex_bytes = hex(ord(let))[2:]
+    if len(hex_bytes) % 2 == 1:
+        hex_bytes = hex_bytes[:len(hex_bytes)-1]
+    if len(hex_bytes) > 255:
+        hex_bytes = hex_bytes[255:]
+    prop_subcat_bytes = prop_subcat_bytes + hex_bytes
 prop_subcat_bytes = prop_subcat_bytes + '00'
 
 for let in property_name:
-    prop_name_bytes = prop_name_bytes + hex(ord(let))[2:]
+    hex_bytes = hex(ord(let))[2:]
+    if len(hex_bytes) % 2 == 1:
+        hex_bytes = hex_bytes[:len(hex_bytes)-1]
+    if len(hex_bytes) > 255:
+        hex_bytes = hex_bytes[255:]
+    prop_name_bytes = prop_name_bytes + hex_bytes
 prop_name_bytes = prop_name_bytes + '00'
 
 for let in property_url:
-    prop_url_bytes = prop_url_bytes + hex(ord(let))[2:]
+    hex_bytes = hex(ord(let))[2:]
+    if len(hex_bytes) % 2 == 1:
+        hex_bytes = hex_bytes[:len(hex_bytes)-1]
+    if len(hex_bytes) > 255:
+        hex_bytes = hex_bytes[255:]
+    prop_url_bytes = prop_url_bytes + hex_bytes
 prop_url_bytes = prop_url_bytes + '00'
 
 for let in property_data:
-    prop_data_bytes = prop_data_bytes + hex(ord(let))[2:]
+    hex_bytes = hex(ord(let))[2:]
+    if len(hex_bytes) % 2 == 1:
+        hex_bytes = hex_bytes[:len(hex_bytes)-1]
+    if len(hex_bytes) > 255:
+        hex_bytes = hex_bytes[255:]
+    prop_data_bytes = prop_data_bytes + hex_bytes
 prop_data_bytes = prop_data_bytes + '00'
 
 total_bytes = (len(tx_ver_bytes) + 
@@ -275,6 +294,7 @@ fee_total = Decimal(0.0001) + Decimal(0.000055*total_packets+0.000055*total_outs
 change = largest_spendable_input['amount'] - fee_total
 # calculate change : 
 # (total input amount) - (broadcast fee)
+print fee_total, available_balance
 if (Decimal(change) < Decimal(0) or fee_total > largest_spendable_input['amount']) and not force:
     print json.dumps({ "status": "NOT OK", "error": "Not enough funds" , "fix": "Set \'force\' flag to proceed without balance checks" })
     exit()
