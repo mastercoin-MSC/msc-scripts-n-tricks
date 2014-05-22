@@ -1,6 +1,6 @@
 #Declare necessary vars
-SX_CORE=''    #ex. /usr/lib/local/sx-core
-WWW_DIR=''    #ex. /tmp
+SX_CORE=/usr/lib/local/sx-core
+WWW_DIR=/tmp
 TEMP_HEIGHT=$WWW_DIR/last_height.tmp
 PERSIST_HEIGHT=$WWW_DIR/block_height.tmp
 STAT_FILE=$WWW_DIR/sx_conn.json
