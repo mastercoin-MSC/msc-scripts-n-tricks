@@ -1,6 +1,7 @@
-### msc tools scripts
+### msc scripts n tricks
 
 these are some scripts where it might be useful for developers to hack around with the protocol
+or just some hacks that might be useful
 
 ```
 deobfus.py deobfuscates MSC packets for debugging
@@ -9,11 +10,15 @@ getbalance gets balances of MSC addresses
 geConsensus calculates consesnsus
 redeemMultisig redeems dust or multisig (1 of n) outs automatically (if you're a msc dev, very useful)
 ```
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-licence is similar to m$ model: 
-please pay me royalties upwards of 10000x the profits of any software this code is used in
-if you do not i will send you an angry letter
-if you still do not pay i will send a harsh verbal communication
-and etc. further escalation until i am paid or the universe implodes
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-jk, do-whatever-you-want & please send PRs if you see something wrong/off/incorrect.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>
