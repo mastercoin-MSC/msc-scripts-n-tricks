@@ -131,7 +131,7 @@ if long_packet[4:8] == '0032':
     print 'Property Data: ' +  prop_data
 
     spare_bytes = ''.join(spare_bytes[spare_bytes.index('00')+1:])
-    print 'Number of Properties: ' + str(int(spare_bytes[0:16],16))
+    print 'Number of Properties: ' + str(int(spare_bytes[:16],16))
     print '\n'
 if long_packet[4:8] == '0033':
     print 'Tx version: ' + long_packet[0:4]
@@ -140,22 +140,49 @@ if long_packet[4:8] == '0033':
     print 'Property type: ' + long_packet[10:14]
     print 'Previous property id: ' + long_packet[14:22]
 
-    spare_bytes = ''.join(long_packet[22:])
-    #DEBUG print spare_bytes.split('00')
-    print 'Property Category: ' + spare_bytes.split('00')[0].decode('hex')
+    spare_bytes = []
+    for i in range(0,len(long_packet[22:]),2):
+        spare_bytes.append(long_packet[22:][i] + long_packet[22:][i+1])
+    #DEBUG print spare_bytes
 
-    print 'Property Subcategory: ' + spare_bytes.split('00')[1].decode('hex') 
-    print 'Property Name: ' + spare_bytes.split('00')[2].decode('hex')
-    print 'Property URL: ' +  spare_bytes.split('00')[3].decode('hex')
-    print 'Property Data: ' +  ''.join(spare_bytes.split('00')[4]).decode('hex')
+    def removeUnicodeBytes(hex_str):
+        temp_str=[]
+        for let in hex_str:
+            if ord(let) < 128:
+                temp_str.append(let)
+            else:
+                temp_str.append('?')
+        return ''.join(temp_str)
 
-    len_var_fields = len(''.join(spare_bytes.split('00')[0:5])+'0000000000')
-    #DEBUG print len_var_fields, spare_bytes[len_var_fields:len_var_fields+16],spare_bytes
-    print 'Currency Identifier desired: ' + str(int(spare_bytes[len_var_fields:len_var_fields+8],16))
-    print 'Number of Properties: ' + str(int(spare_bytes[len_var_fields+8:len_var_fields+8+16],16))
-    print 'Deadline: ' + str(int(spare_bytes[len_var_fields+8+16:len_var_fields+8+16+16],16))
-    print 'Earlybird bonus: ' + str(int(spare_bytes[len_var_fields+8+16+16:len_var_fields+8+16+16+2],16))
-    print 'Percentage for issuer: ' + str(int(spare_bytes[len_var_fields+8+16+16+2:len_var_fields+8+16+16+2+2],16))
+    prop_cat = removeUnicodeBytes(''.join(spare_bytes[0:spare_bytes.index('00')]).decode('hex')) 
+    print 'Property Category: ' + prop_cat
+
+    spare_bytes = spare_bytes[spare_bytes.index('00')+1:]
+    prop_subcat = removeUnicodeBytes(''.join(spare_bytes[0:spare_bytes.index('00')]).decode('hex')) 
+    print 'Property Subcategory: ' + prop_subcat
+
+    spare_bytes = spare_bytes[spare_bytes.index('00')+1:]
+    prop_name = removeUnicodeBytes(''.join(spare_bytes[0:spare_bytes.index('00')]).decode('hex')) 
+    print 'Property Name: ' + prop_name
+
+    spare_bytes = spare_bytes[spare_bytes.index('00')+1:]
+    prop_url = removeUnicodeBytes(''.join(spare_bytes[0:spare_bytes.index('00')]).decode('hex'))
+    print 'Property URL: ' +  prop_url
+
+    spare_bytes = spare_bytes[spare_bytes.index('00')+1:]
+    prop_data = removeUnicodeBytes(''.join(spare_bytes[0:spare_bytes.index('00')]).decode('hex')) 
+    print 'Property Data: ' +  prop_data
+
+    spare_bytes = ''.join(spare_bytes[spare_bytes.index('00')+1:])
+    print 'Currency Identifier desired: '+str(int(spare_bytes[:8],16)), spare_bytes[:8]
+    spare_bytes = ''.join(spare_bytes[8:])
+    print 'Number of Properties: '+str(int(spare_bytes[:16],16))
+    spare_bytes = ''.join(spare_bytes[16:])
+    print 'Deadline: '+str(int(spare_bytes[:16],16))
+    spare_bytes = ''.join(spare_bytes[16:])
+    print 'Earlybird bonus: '+str(int(spare_bytes[:2],16))
+    spare_bytes = ''.join(spare_bytes[2:4])
+    print 'Percentage for issuer: '+ str(int(spare_bytes[:2],16))
     print '\n'
 if long_packet[4:8] == '0000':
     print long_packet
@@ -168,3 +195,4 @@ if long_packet[4:8] == '0035':
     print 'Tx version: ' + long_packet[0:4]
     print 'Tx type: ' + long_packet[4:8]
     print 'Currency Identifier: ' + long_packet[8:16]
+
