@@ -66,11 +66,11 @@ elif not force:
     print json.dumps({ "status": "NOT OK", "error": "from address is invalid or hasn't been used on the network" , "fix": "Set \'force\' flag to proceed without balance checks" })
     exit()
 
-#find largest spendable input from UTXO
-largest_spendable_input = { "txid": "", "amount": Decimal(0) }
+#find spendable input from UTXO
+spendable_input = { "txid": "", "amount": Decimal(0) }
 for unspent in unspent_tx:
-    if unspent.amount > largest_spendable_input["amount"]:
-        largest_spendable_input = { "txid": unspent.txid, "amount": unspent.amount }
+    if unspent.amount > 0.0004:
+        spendable_input = { "txid": unspent.txid, "amount": unspent.amount }
 
 #real stuff happens here:
 
@@ -78,15 +78,15 @@ broadcast_fee = 0.0001
 output_minimum = 0.0006 #dust threshold
 
 fee_total = Decimal(0.0001) + Decimal(0.00006 * 4)
-change = largest_spendable_input['amount'] - fee_total
+change = spendable_input['amount'] - fee_total
 # calculate change : 
 # (total input amount) - (broadcast fee) - (total transaction fee)
 
-print fee_total, largest_spendable_input['amount']
-if (Decimal(change) < Decimal(0) or fee_total > largest_spendable_input['amount']) and not force:
+print fee_total, spendable_input['amount']
+if (Decimal(change) < Decimal(0) or fee_total > spendable_input['amount']) and not force:
     print json.dumps({ "status": "NOT OK", "error": "Not enough funds" , "fix": "Set \'force\' flag to proceed without balance checks" })
     exit()
-
+exit()
 #build multisig data address
 
 from_address = listOptions['transaction_from']
@@ -129,7 +129,7 @@ while invalid:
 #### Build transaction
 
 #retrieve raw transaction to spend it
-prev_tx = conn.getrawtransaction(largest_spendable_input['txid'])
+prev_tx = conn.getrawtransaction(spendable_input['txid'])
 
 validnextinputs = []                      #get valid redeemable inputs
 for output in prev_tx.vout:
