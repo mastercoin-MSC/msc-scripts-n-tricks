@@ -86,7 +86,7 @@ print fee_total, spendable_input['amount']
 if (Decimal(change) < Decimal(0) or fee_total > spendable_input['amount']) and not force:
     print json.dumps({ "status": "NOT OK", "error": "Not enough funds" , "fix": "Set \'force\' flag to proceed without balance checks" })
     exit()
-exit()
+
 #build multisig data address
 
 from_address = listOptions['transaction_from']
