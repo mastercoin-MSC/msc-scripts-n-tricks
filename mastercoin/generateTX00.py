@@ -69,7 +69,7 @@ elif not force:
 #find spendable input from UTXO
 smallest_spendable_input = { "txid": "", "amount": Decimal(0) }
 for unspent in unspent_tx:
-    if unspent.amount > 0.0004 and unspent.amount < smallest_spendable_input:
+    if Decimal(unspent.amount) > Decimal(0.0004) and (smallest_spendable_input['amount'] == Decimal(0) or unspent.amount < smallest_spendable_input['amount']):
         smallest_spendable_input = { "txid": unspent.txid, "amount": unspent.amount }
 
 #real stuff happens here:
