@@ -9,6 +9,8 @@ import bitcoinrpc
 import pybitcointools
 from decimal import *
 
+HEXSPACE='41' #change this to 21 if your hex decode is malformed, system dependent value
+
 
 if len(sys.argv) > 1 and "--force" not in sys.argv: 
     print "Takes a list of bitcoind options, addresses and a send amount and outputs a transaction in JSON \nUsage: cat generateTx.json | python generateTx.py\nRequires a fully-synced *local* bitcoind node"
@@ -152,7 +154,7 @@ unsigned_raw_tx = conn.createrawtransaction(validnextinputs, validnextoutputs)
 json_tx =  conn.decoderawtransaction(unsigned_raw_tx)
 
 #add multisig output to json object
-json_tx['vout'].append({ "scriptPubKey": { "hex": "5141" + pubkey + "21" + data_pubkey.lower() + "52ae", "asm": "1 " + pubkey + " " + data_pubkey.lower() + " 2 OP_CHECKMULTISIG", "reqSigs": 1, "type": "multisig", "addresses": [ pybitcointools.pubkey_to_address(pubkey), pybitcointools.pubkey_to_address(data_pubkey) ] }, "value": 0.00006*2, "n": len(validnextoutputs)})
+json_tx['vout'].append({ "scriptPubKey": { "hex": "51" + HEXSPACE + pubkey + "21" + data_pubkey.lower() + "52ae", "asm": "1 " + pubkey + " " + data_pubkey.lower() + " 2 OP_CHECKMULTISIG", "reqSigs": 1, "type": "multisig", "addresses": [ pybitcointools.pubkey_to_address(pubkey), pybitcointools.pubkey_to_address(data_pubkey) ] }, "value": 0.00006*2, "n": len(validnextoutputs)})
 
 #construct byte arrays for transaction 
 #assert to verify byte lengths are OK
