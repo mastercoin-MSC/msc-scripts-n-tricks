@@ -122,7 +122,9 @@ msc_data_key = ''.join(map(lambda xor_target: hex(operator.xor(xor_target[0],xor
 obfuscated = "02" + msc_data_key + "00" 
 #add key identifier and ecdsa byte to new mastercoin data key
 
-if not testnet:
+if testnet:
+    data_pubkey = obfuscated[:-2] + hex(random.randint(0,255))[2:].rjust(2,"0").upper()
+else:
     invalid = True
     while invalid:
         obfuscated_randbyte = obfuscated[:-2] + hex(random.randint(0,255))[2:].rjust(2,"0").upper()
