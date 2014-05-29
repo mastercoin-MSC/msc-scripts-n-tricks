@@ -33,7 +33,9 @@ privkey_char1 = listOptions['from_private_key'][0]
 if privkey_char1 == 'c' or privkey_char1 == '9':
    testnet=True
 
-if not testnet:
+if testnet:
+    pass #do no check here
+else:
     #check if private key provided produces correct address
     address = pybitcointools.privkey_to_address(listOptions['from_private_key'])
     if not address == listOptions['transaction_from'] and not force:
@@ -148,7 +150,12 @@ for output in prev_tx.vout:
             if address == listOptions['transaction_from']:
                 validnextinputs.append({ "txid": prev_tx.txid, "vout": output['n']})
 
-validnextoutputs = { "1EXoDusjGwvnjZUyKkxZ4UHEf77z6A5S4P": 0.00006 , listOptions['transaction_to'] : 0.00006 }
+if testnet:
+    exodus = "n1eXodd53V4eQP96QmJPYTG2oBuFwbq6kL" 
+else:
+    exodus = "1EXoDusjGwvnjZUyKkxZ4UHEf77z6A5S4P"
+
+validnextoutputs = { exodus : 0.00006 , listOptions['transaction_to'] : 0.00006 }
 
 if change > Decimal(0.00006): # send anything above dust to yourself
     validnextoutputs[ listOptions['transaction_from'] ] = float(change) 
