@@ -27,11 +27,15 @@ listOptions = json.loads(str(''.join(JSON)))
 #sort out whether using local or remote API
 conn = bitcoinrpc.connect_to_local()
 
-#check if private key provided produces correct address
-address = pybitcointools.privkey_to_address(listOptions['from_private_key'])
-if not address == listOptions['transaction_from'] and not force:
-    print json.dumps({ "status": "NOT OK", "error": "Private key does not produce same address as \'transaction from\'" , "fix": "Set \'force\' flag to proceed without address checks" })
-    exit()
+privkey_char1 = listOptions['from_private_key'][0]
+if privkey_char1 == 'c' or privkey_char1 == '9':
+   print "testnet"
+else:
+    #check if private key provided produces correct address
+    address = pybitcointools.privkey_to_address(listOptions['from_private_key'])
+    if not address == listOptions['transaction_from'] and not force:
+        print json.dumps({ "status": "NOT OK", "error": "Private key does not produce same address as \'transaction from\'" , "fix": "Set \'force\' flag to proceed without address checks" })
+        exit()
 
 #see if account has been added
 account = conn.getaccount(listOptions['transaction_from'])
