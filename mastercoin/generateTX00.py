@@ -11,7 +11,6 @@ from decimal import *
 
 HEXSPACE='41' #change this to 21 if your hex decode is malformed, system dependent value
 
-
 if len(sys.argv) > 1 and "--force" not in sys.argv: 
     print "Takes a list of bitcoind options, addresses and a send amount and outputs a transaction in JSON \nUsage: cat generateTx.json | python generateTx.py\nRequires a fully-synced *local* bitcoind node"
     exit()
@@ -29,10 +28,12 @@ listOptions = json.loads(str(''.join(JSON)))
 #sort out whether using local or remote API
 conn = bitcoinrpc.connect_to_local()
 
+#check for testnet addr
 privkey_char1 = listOptions['from_private_key'][0]
 if privkey_char1 == 'c' or privkey_char1 == '9':
-   print "testnet"
-else:
+   testnet=True
+
+if not testnet:
     #check if private key provided produces correct address
     address = pybitcointools.privkey_to_address(listOptions['from_private_key'])
     if not address == listOptions['transaction_from'] and not force:
@@ -121,16 +122,17 @@ msc_data_key = ''.join(map(lambda xor_target: hex(operator.xor(xor_target[0],xor
 obfuscated = "02" + msc_data_key + "00" 
 #add key identifier and ecdsa byte to new mastercoin data key
 
-invalid = True
-while invalid:
-    obfuscated_randbyte = obfuscated[:-2] + hex(random.randint(0,255))[2:].rjust(2,"0").upper()
-    #set the last byte to something random in case we generated an invalid pubkey
-    potential_data_address = pybitcointools.pubkey_to_address(obfuscated_randbyte)
-    if bool(conn.validateaddress(potential_data_address).isvalid):
-        data_pubkey = obfuscated_randbyte
-        invalid = False
-#make sure the public key is valid using pybitcointools, if not, regenerate 
-#the last byte of the key and try again
+if not testnet:
+    invalid = True
+    while invalid:
+        obfuscated_randbyte = obfuscated[:-2] + hex(random.randint(0,255))[2:].rjust(2,"0").upper()
+        #set the last byte to something random in case we generated an invalid pubkey
+        potential_data_address = pybitcointools.pubkey_to_address(obfuscated_randbyte)
+        if bool(conn.validateaddress(potential_data_address).isvalid):
+            data_pubkey = obfuscated_randbyte
+            invalid = False
+    #make sure the public key is valid using pybitcointools, if not, regenerate 
+    #the last byte of the key and try again
 
 #### Build transaction
 
