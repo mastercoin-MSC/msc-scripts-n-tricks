@@ -31,7 +31,9 @@ conn = bitcoinrpc.connect_to_local()
 #check for testnet addr
 privkey_char1 = listOptions['from_private_key'][0]
 if privkey_char1 == 'c' or privkey_char1 == '9':
-   testnet=True
+    testnet=True
+else:
+    testnet=False
 
 if testnet:
     pass #do no check here
