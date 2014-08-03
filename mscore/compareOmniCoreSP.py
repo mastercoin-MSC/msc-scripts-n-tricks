@@ -4,6 +4,7 @@ b=json.loads(open('consensus/omni.txt').readline())
 
 notmatching=[]
 
+
 for addr in a:
     addr__=addr['address']
     bal=('%.8f' % float(addr['balance']) ) 
@@ -20,10 +21,16 @@ for addr in a:
                 #exit()
 
 
+countA=0
+countB=0
 for addr in a:
+    countA += 1
     if addr['address'] not in notmatching:
         print "couldn't find ", addr['address'], ' in testaddrs'
     
 for addr in b:
+    countB += 1
     if addr['address'] not in notmatching:
         print "couldn't find ", addr['address'], ' in canonical'
+
+print 'found total of '+str(countA)+' addrs in RPC and '+str(countB)+' addrs in webservice'

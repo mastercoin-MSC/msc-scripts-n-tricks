@@ -17,13 +17,17 @@ for addr in a:
         if addr__ == addr_['address']:
             notmatching.append(addr__)
             if ( bal != ( '%.8f' % float(addr_['balance'])) or res != ( '%.8f' % float(addr_['reserved_balance'])) ):
-            print '\n',addr__, bal, res, addr_
-            #exit()
+                print '\n',addr__, bal, res, addr_
+                #exit()
 
 for addr in a:
-    if addr['address'] not in notmatching:
-        print "couldn't find ", addr['address'], ' in testaddrs'
+    splitaddr=addr.split('+')
+    addr__=splitaddr[0]
+    if addr__ not in notmatching:
+        print "couldn't find ", addr__, ' in testaddrs'
     
 for addr in b:
     if addr['address'] not in notmatching:
         print "couldn't find ", addr['address'], ' in canonical'
+
+print len(a), len(b)
