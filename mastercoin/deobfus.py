@@ -195,4 +195,52 @@ if long_packet[4:8] == '0035':
     print 'Tx version: ' + long_packet[0:4]
     print 'Tx type: ' + long_packet[4:8]
     print 'Currency Identifier: ' + long_packet[8:16]
+if long_packet[4:8] == '0015':
+    print long_packet
+    print 'Tx version: ' + long_packet[0:4]
+    print 'Tx type: ' + long_packet[4:8]
+    print 'Currency Identifier for Sale: ' + long_packet[8:16]
+    print 'Amount for sale: ' + long_packet[16:32]
+    print 'Currency Identifier Desired: ' + long_packet[32:40]
+    print 'Amount Desired: ' + long_packet[40:56]
+    print 'Action: ' + long_packet[56:58]
+if long_packet[4:8] == '0036':
+    print 'Tx version: ' + long_packet[0:4]
+    print 'Tx type: ' + long_packet[4:8]
+    print 'Ecosystem: ' + long_packet[8:10]
+    print 'Property type: ' + long_packet[10:14]
+    print 'Previous property id: ' + long_packet[14:22]
 
+    spare_bytes = []
+    for i in range(0,len(long_packet[22:]),2):
+        spare_bytes.append(long_packet[22:][i] + long_packet[22:][i+1])
+    #DEBUG print spare_bytes
+
+    def removeUnicodeBytes(hex_str):
+        temp_str=[]
+        for let in hex_str:
+            if ord(let) < 128:
+                temp_str.append(let)
+            else:
+                temp_str.append('?')
+        return ''.join(temp_str)
+
+    prop_cat = removeUnicodeBytes(''.join(spare_bytes[0:spare_bytes.index('00')]).decode('hex')) 
+    print 'Property Category: ' + prop_cat
+
+    spare_bytes = spare_bytes[spare_bytes.index('00')+1:]
+    prop_subcat = removeUnicodeBytes(''.join(spare_bytes[0:spare_bytes.index('00')]).decode('hex')) 
+    print 'Property Subcategory: ' + prop_subcat
+
+    spare_bytes = spare_bytes[spare_bytes.index('00')+1:]
+    prop_name = removeUnicodeBytes(''.join(spare_bytes[0:spare_bytes.index('00')]).decode('hex')) 
+    print 'Property Name: ' + prop_name
+
+    spare_bytes = spare_bytes[spare_bytes.index('00')+1:]
+    prop_url = removeUnicodeBytes(''.join(spare_bytes[0:spare_bytes.index('00')]).decode('hex'))
+    print 'Property URL: ' +  prop_url
+
+    spare_bytes = spare_bytes[spare_bytes.index('00')+1:]
+    prop_data = removeUnicodeBytes(''.join(spare_bytes[0:spare_bytes.index('00')]).decode('hex')) 
+    print 'Property Data: ' +  prop_data
+    print '\n'
