@@ -244,3 +244,25 @@ if long_packet[4:8] == '0036':
     prop_data = removeUnicodeBytes(''.join(spare_bytes[0:spare_bytes.index('00')]).decode('hex')) 
     print 'Property Data: ' +  prop_data
     print '\n'
+if long_packet[4:8] == '0037' or long_packet[4:8] == '0038':
+    print 'Tx version: ' + long_packet[0:4]
+    print 'Tx type: ' + long_packet[4:8]
+    print 'Property id: ' + long_packet[8:16]
+    print 'Number of properties: ' + long_packet[16:32]
+    spare_bytes = []
+    for i in range(0,len(long_packet[32:]),2):
+        spare_bytes.append(long_packet[32:][i] + long_packet[32:][i+1])
+    #DEBUG print spare_bytes
+
+    def removeUnicodeBytes(hex_str):
+        temp_str=[]
+        for let in hex_str:
+            if ord(let) < 128:
+                temp_str.append(let)
+            else:
+                temp_str.append('?')
+        return ''.join(temp_str)
+
+    prop_data = removeUnicodeBytes(''.join(spare_bytes[0:spare_bytes.index('00')]).decode('hex')) 
+    print 'Property Data: ' +  prop_data
+    print '\n'
