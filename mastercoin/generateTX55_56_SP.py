@@ -242,7 +242,10 @@ for output in prev_tx.vout:
             if address == listOptions['transaction_from']:
                 validnextinputs.append({ "txid": prev_tx.txid, "vout": output['n']})
 
-validnextoutputs = { exodus_address: 0.000055 }
+if len( listOptions['transaction_to'] ) >= 34:
+  validnextoutputs = { exodus_address: 0.000055, listOptions['transaction_to']: 0.000055 }
+else:
+  validnextoutputs = { exodus_address: 0.000055 }
 
 if change > Decimal(0.000055): # send anything above dust to yourself
     validnextoutputs[ listOptions['transaction_from'] ] = float(change) 
