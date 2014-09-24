@@ -5,6 +5,9 @@ def callCLI():
   print ""
   print "Welcome to the Mastercoin Smart Property (tm) Raw Transaction Generator!"
   print "You will be asked a few questions, please answer truthfully or else."
+  print ""
+  print "WARNING: YOU WILL NEED THE FOLLOWING INFORMATION TO COMPLETE THIS TRANSACTION: "
+  print "(transaction to spend, multisignature address, redemption address, multisignature address public key, multisignature address redeem script)"
 
   o['testnet']=process_bool( raw_input("Is this intended for Testnet? , required: [0=No, 1=Yes]") )
   o['conndetails']=process_daemon(raw_input("Is the BITCOIN DAEMON running on this machine? , required: [0=No, 1=Yes]"))

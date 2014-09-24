@@ -5,6 +5,9 @@ def callCLI(txType):
   print ""
   print "Welcome to the Mastercoin Smart Property (tm) Raw Transaction Generator!"
   print "You will be asked a few questions, please answer truthfully or else."
+  print ""
+  print "WARNING: YOU WILL NEED THE FOLLOWING INFORMATION TO COMPLETE THIS TRANSACTION: "
+  print "(transaction to spend, multisignature address, redemption address)"
 
   o['testnet']=process_bool( raw_input("Is this intended for Testnet? , required: [0=No, 1=Yes]") )
   o['conndetails']=process_daemon(raw_input("Is the BITCOIN DAEMON running on this machine? , required: [0=No, 1=Yes]"))
@@ -25,6 +28,17 @@ def callCLI(txType):
 
     o['redeemer_addr']=process_redeemer(raw_input("Please enter the REDEMPTION ADDRESS (if you own the private key) or the public key of an address that will be used to retreive multisignature outputs, optional: [default=1EXoDusjGwvnjZUyKkxZ4UHEf77z6A5S4P]"))
 
+  if txType == 55: #grant or revoke
+    o['transaction_type']=process_int(raw_input("Is this a GRANT or a REVOKE?, required: [55=Grant, 56=Revoke]"))
+    o['transaction_from']=process_address(raw_input("Please enter the MULTISIG ADDRESS that will be used in securing funds, required: "))
+    o['spending_txid']=process_txid(raw_input("Please enter a TRANSACTION ID that has enough Bitcoin to perform the transaction, required: "))
+    o['spending_txid_output']=process_int(raw_input("Please enter the TRANSACTION OUTPUT from the above that will be spent, required: "))
+
+    o['property_id']=process_int(raw_input("Please enter the PROPERTY ID of the property you wish your grant/revoke to be, required: "))
+    o['number_properties']=process_int(raw_input("Please enter the NUMBER OF PROPERTIES that will be granted or revoked in the transaction, required: [satoshi amounts only, please] "))
+    o['memo']=process_string( raw_input("Please enter any additional notes about your property if any, optional: [default='', max=255 characters]") )
+    o['redeemer_addr']=process_redeemer(raw_input("Please enter the REDEMPTION ADDRESS (if you own the private key) or the public key of an address that will be used to retreive multisignature outputs, optional: [default=1EXoDusjGwvnjZUyKkxZ4UHEf77z6A5S4P]"))
+    
   print o
   return o
 
