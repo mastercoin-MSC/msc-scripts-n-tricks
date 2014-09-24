@@ -488,7 +488,8 @@ if sys.argv[1] == '-ui':
   print ''
   sign_it=raw_input('Would you like to sign it now? [yes OR no]')
   if sign_it == 'yes':
-     print 'do more stuff'
+     import P2SH_signer
+     #P2SH_signer.run_P2SH_sign()
   else: exit()
 else:
   print ''.join(hex_transaction)

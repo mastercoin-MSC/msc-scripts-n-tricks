@@ -81,6 +81,11 @@ def run_P2SH_sign():
     print 'This is your hex, buddy: '
     print ''.join(hex_transaction)
     print ''
+    if partial_signed_raw_tx['complete'] == False:
+      sign_it=raw_input('Would you like to sign it again? [yes OR no]')
+      if sign_it == 'yes':
+         run_P2SH_sign()
+      else: exit()
   else:
     print ''.join(hex_transaction)
 
