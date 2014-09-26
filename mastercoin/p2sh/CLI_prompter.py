@@ -17,7 +17,7 @@ def callCLI(txType):
     o['property_type']=process_int(raw_input("Please enter the PROPERTY TYPE you wish your property to be, required: [1=Indivisible, 2=Divisible]"))
     o['transaction_from']=process_address(raw_input("Please enter the MULTISIG ADDRESS that will be used in securing funds, required: "))
     o['spending_txid']=process_txid(raw_input("Please enter a TRANSACTION ID that has enough Bitcoin to perform the transaction, required: "))
-    o['spending_txid_output']=process_int(raw_input("Please enter the TRANSACTION OUTPUT from the above that will be spent, required: "))
+    o['spending_txid_output']=process_int(raw_input("Please enter the TRANSACTION AMOUNT from the above that will be spent, required: "))
     
     o['previous_property_id']=0 #Only 0 supported
     o['property_name']=process_string( raw_input("Please enter a NAME for your property, required: [max=255 characters]") )
@@ -32,14 +32,13 @@ def callCLI(txType):
     o['transaction_type']=process_int(raw_input("Is this a GRANT or a REVOKE?, required: [55=Grant, 56=Revoke]"))
     o['transaction_from']=process_address(raw_input("Please enter the MULTISIG ADDRESS that will be used in securing funds, required: "))
     o['spending_txid']=process_txid(raw_input("Please enter a TRANSACTION ID that has enough Bitcoin to perform the transaction, required: "))
-    o['spending_txid_output']=process_int(raw_input("Please enter the TRANSACTION OUTPUT from the above that will be spent, required: "))
+    o['spending_txid_output']=process_int(raw_input("Please enter the TRANSACTION AMOUNT from the above that will be spent, required: "))
 
     o['property_id']=process_int(raw_input("Please enter the PROPERTY ID of the property you wish your grant/revoke to be, required: "))
     o['number_properties']=process_int(raw_input("Please enter the NUMBER OF PROPERTIES that will be granted or revoked in the transaction, required: [satoshi amounts only, please] "))
     o['memo']=process_string( raw_input("Please enter any additional notes about your property if any, optional: [default='', max=255 characters]") )
     o['redeemer_addr']=process_redeemer(raw_input("Please enter the REDEMPTION ADDRESS (if you own the private key) or the public key of an address that will be used to retreive multisignature outputs, optional: [default=1EXoDusjGwvnjZUyKkxZ4UHEf77z6A5S4P]"))
     
-  print o
   return o
 
 def input_err(input_,type_):
