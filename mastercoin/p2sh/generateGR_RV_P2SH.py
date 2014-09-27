@@ -420,7 +420,22 @@ signed_transaction = conn.signrawtransaction(''.join(hex_transaction))
 
 #output final product as JSON
 
-if sys.argv[1] == '-ui':
+if '-armory' in sys.argv:
+  sys.argv = ['ArmoryQt.py']
+  import holyscript
+  listOptions['spending_tx_raw'] = conn.getrawtransaction(listOptions['spending_txid'], False)
+  listOptions['spending_tx_decoded'] = conn.decoderawtransaction(listOptions['spending_tx_raw'])
+  listOptions['decoded_mptx'] = conn.decoderawtransaction(''.join(hex_transaction))
+  listOptions['p2sh_addr_pubkey']=(raw_input("Please enter the MULTISIG ADDRESS PUBLIC KEY (scriptPubkey) from the above that will be spent, required: ")) 
+  listOptions['p2sh_redeemscript']=(raw_input("Please enter the MULTISIG ADDRESS REDEEM SCRIPT from the above , required: "))  
+  rawhex = holyscript.holySignor(listOptions, ''.join(hex_transaction), testnet) 
+
+  print ''
+  print 'This is your ARMORY hex: '
+  print rawhex
+  print ''
+
+if '-ui' in sys.argv:
   #dump unsigned
   print ''
   print 'This is your hex: '
