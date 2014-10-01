@@ -415,9 +415,6 @@ hex_transaction = hex_transaction + blocklocktime
 #verify that transaction is valid
 assert type(conn.decoderawtransaction(''.join(hex_transaction).lower())) == type({})
 
-#sign it
-signed_transaction = conn.signrawtransaction(''.join(hex_transaction))
-
 #output final product as JSON
 
 if '-armory' in sys.argv:
