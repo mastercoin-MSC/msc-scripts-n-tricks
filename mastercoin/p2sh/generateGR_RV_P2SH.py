@@ -27,9 +27,10 @@ else:
           "memo": sys.argv[4],
           "redeemer_addr": sys.argv[5],
           "transaction_from": sys.argv[6],
-          "spending_txid": sys.argv[7],
-          "spending_txid_output": float(sys.argv[8]),
-          "testnet": bool(int(sys.argv[9])) #0 or 1
+          "transaction_to": sys.argv[7],
+          "spending_txid": sys.argv[8],
+          "spending_txid_output": float(sys.argv[9]),
+          "testnet": bool(int(sys.argv[10])) #0 or 1
       }
 
 HEXSPACE_SECOND='21'
@@ -51,10 +52,10 @@ if sys.argv[1] == '-ui':
     print 'connection did not establish: FAIL'
     exit()
 else:
-  if sys.argv[10] == 'local':
+  if sys.argv[11] == 'local':
     conn = bitcoinrpc.connect_to_local()
-  elif sys.argv[10] == 'remote':
-    conndetails=open(sys.argv[11]).readline().split(':')
+  elif sys.argv[11] == 'remote':
+    conndetails=open(sys.argv[12]).readline().split(':')
     #print conndetails, int(conndetails[4])
     #sort out whether using local or remote API
     conn = bitcoinrpc.connect_to_remote(conndetails[0],conndetails[1],host=conndetails[2],port=int(conndetails[3]),use_https=int(conndetails[4]))
@@ -290,6 +291,9 @@ else:
     exodus="1EXoDusjGwvnjZUyKkxZ4UHEf77z6A5S4P"
 
 validnextoutputs = { exodus : 0.000055 }
+
+if listOptions['transaction_to'] != None and bool(conn.validateaddress(listOptions['transaction_to']).isvalid):
+    validnextoutputs[ listOptions['transaction_to'] ] = 0.000055
 
 if change > Decimal(0.000055): # send anything above dust to yourself
     validnextoutputs[ listOptions['transaction_from'] ] = float(change) 

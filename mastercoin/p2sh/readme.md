@@ -1,3 +1,7 @@
+YOU NEED TO HAVE DONE THE FOLLOWING:
+*Added the p2sh address sending the transaction to the wallet using 'addmultisig'
+
+
 this script folder allows one to do p2sh transactions
 
 run the Ui like so:

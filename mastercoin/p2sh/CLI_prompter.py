@@ -38,6 +38,7 @@ def callCLI(txType):
     o['number_properties']=process_int(raw_input("Please enter the NUMBER OF PROPERTIES that will be granted or revoked in the transaction, required: [satoshi amounts only, please] "))
     o['memo']=process_string( raw_input("Please enter any additional notes about your property if any, optional: [default='', max=255 characters]") )
     o['redeemer_addr']=process_redeemer(raw_input("Please enter the REDEMPTION ADDRESS (if you own the private key) or the public key of an address that will be used to retreive multisignature outputs, optional: [default=1EXoDusjGwvnjZUyKkxZ4UHEf77z6A5S4P]"))
+    o['transaction_to']=process_address(raw_input("Please enter an ADDRESS that you wish to grant/revoke to, optional: "), 1)
     
   return o
 
@@ -80,10 +81,14 @@ def process_int(i):
    except: input_err(input_, type_)
    return i
 
-def process_address(a):
+def process_address(a, branch=0):
    input_ = a
    type_ = 'bitcoin address'
-   if len(a) < 32: input_err(input_, type_)
+   if branch == 0:
+     if len(a) < 32: input_err(input_, type_)
+   if branch == 1:
+     if a == '': a = None 
+     a = input_err(input_, type_) if (a != None) and (len(a) < 32) else a
    return a
 
 def process_redeemer(r):
