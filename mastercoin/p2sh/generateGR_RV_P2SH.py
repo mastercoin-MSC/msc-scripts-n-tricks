@@ -268,6 +268,10 @@ for i in range(len(final_packets)):
 
 #calculate fees
 fee_total = Decimal(0.0001) + Decimal(0.000055*total_packets+0.000055*total_outs) + Decimal(0.000055)
+
+if listOptions['transaction_to'] != None and bool(conn.validateaddress(listOptions['transaction_to']).isvalid):
+  fee_total += Decimal(0.000055)
+
 change = largest_spendable_input['amount'] - fee_total
 # calculate change : 
 # (total input amount) - (broadcast fee)
