@@ -28,7 +28,7 @@ def getMSig(s):
 
 def holySignor(opt, scr, tnet_):
     global tnet
-    tnet = 'fabfb5da' if tnet_ else 'f9beb4d9'
+    tnet = 'f9beb4d9' if tnet_ else 'f9beb4d9'
 
     pkdat = getMSig(opt['p2sh_redeemscript']) 
     
