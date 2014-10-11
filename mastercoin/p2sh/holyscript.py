@@ -9,7 +9,7 @@ tnet = 0
 
 def holyDecodor(signed, tnet_):
     global tnet
-    tnet = 'fabfb5da' if tnet_ else 'f9beb4d9'
+    tnet = '0b110907' if tnet_ else 'f9beb4d9'
 
     raw_tx_bin = UnsignedTransaction().unserializeAscii(signed, skipMagicCheck=False).getSignedPyTx(False,False).serialize();
     raw_tx_hex = binary_to_hex(raw_tx_bin)
@@ -28,7 +28,7 @@ def getMSig(s):
 
 def holySignor(opt, scr, tnet_):
     global tnet
-    tnet = 'f9beb4d9' if tnet_ else 'f9beb4d9'
+    tnet = '0b110907' if tnet_ else 'f9beb4d9'
 
     pkdat = getMSig(opt['p2sh_redeemscript']) 
     

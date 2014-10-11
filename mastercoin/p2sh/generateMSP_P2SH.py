@@ -481,7 +481,10 @@ hex_transaction = hex_transaction + blocklocktime
 assert type(conn.decoderawtransaction(''.join(hex_transaction).lower())) == type({})
 
 if '-armory' in sys.argv:
-  sys.argv = ['ArmoryQt.py']
+  if testnet:
+    sys.argv = ['ArmoryQt.py', '--testnet']
+  else:
+    sys.argv = ['ArmoryQt.py']
   import holyscript
   listOptions['spending_tx_raw'] = conn.getrawtransaction(listOptions['spending_txid'], False)
   listOptions['spending_tx_decoded'] = conn.decoderawtransaction(listOptions['spending_tx_raw'])
