@@ -13,7 +13,7 @@ listOptions = { 'source': sys.argv[1], 'transaction': sys.argv[2]  }
 conn = bitcoinrpc.connect_to_local()
 
 transaction = conn.getrawtransaction(listOptions['transaction'])
-
+inputs = transaction.vin
 #senders address
 source = listOptions['source']
 compressed = listOptions['source']
@@ -48,9 +48,14 @@ for datahex in scriptkeys:
 
 packets = nonrefkeys
 
+import Crypto.Cipher.ARC4
+key = Crypto.Cipher.ARC4.new(binascii.unhexlify(inputs[0]['txid']))
+
 long_packet = []
 for packet in packets:
+    packet = binascii.hexlify(key.decrypt(binascii.unhexlify(packet)))
     print 'Encoded packet Found : ' + packet
+
     long_packet += binascii.unhexlify(packet)[1:]
 
 print '\n'
