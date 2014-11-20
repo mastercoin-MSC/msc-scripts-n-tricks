@@ -7,7 +7,13 @@ print '\n'
 
 if len(sys.argv) < 3 : print "\nUSAGE: \ncat python2 counterparty_decoder.py source tx_hash testnet[default=0] service[default=bitcoind]\n", exit()
 
-listOptions = { 'source': sys.argv[1], 'transaction': sys.argv[2]  }
+listOptions = { 'source': sys.argv[1], 'transaction': sys.argv[2], 'testnet': bool(int(sys.argv[3]))  }
+
+testnet=False
+magicbyte=0
+if listOptions['testnet']:
+  testnet=True
+  magicbyte=111
 
 #sort out whether using local or remote API
 conn = bitcoinrpc.connect_to_local()
@@ -41,7 +47,7 @@ for output in data_output:
 nonrefkeys = []
 for datahex in scriptkeys:
     if len(datahex) == 66:
-      if pybitcointools.pubtoaddr(datahex) != source and pybitcointools.pubtoaddr(datahex) != compressed:
+      if pybitcointools.pubtoaddr(datahex, magicbyte) != source and pybitcointools.pubtoaddr(datahex, magicbyte) != compressed:
           nonrefkeys.append(datahex)
     else:
       nonrefkeys.append(datahex)
@@ -186,7 +192,8 @@ if msg_id == 11:
 if msg_id == 100:
 
     print 'Publish: '
-    print 'Data: ' , ''.join(long_packet)
+    print 'Data: ' , binascii.hexlify(''.join(long_packet))
+    print 'Data-Interpreted: ', ''.join(long_packet)
 
 
 print '\n'
