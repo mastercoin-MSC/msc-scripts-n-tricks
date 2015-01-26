@@ -75,7 +75,7 @@ if available_balance < Decimal(0.0006*3) and not force:
 validated = conn.validateaddress(listOptions['transaction_from'])
 if 'pubkey' in validated.__dict__: 
     pubkey = validated.pubkey
-    if pubkey < 100:
+    if len(pubkey) < 100:
         print "Compressed Key, using hexspace 21"
         HEXSPACE_FIRST='21'
     else:
