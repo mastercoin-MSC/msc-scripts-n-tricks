@@ -1,0 +1,2 @@
+uptime-scr.sh monitors uptime
+sx-roundrobin.sh does roundrobin of sx servers until a good one is found

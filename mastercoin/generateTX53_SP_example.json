@@ -1,0 +1,6 @@
+{ 
+  "transaction_type": 'type: int, ex: 53',
+  "property_id": 'type: int, ex: 9',
+  "transaction_from": "type: base58",
+  "from_private_key": "type: base58"
+}

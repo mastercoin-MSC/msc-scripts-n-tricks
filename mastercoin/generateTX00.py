@@ -9,6 +9,7 @@ import bitcoinrpc
 import pybitcointools
 from decimal import *
 
+HEXSPACE='41' #change this to 21 if your hex decode is malformed, system dependent value
 
 if len(sys.argv) > 1 and "--force" not in sys.argv: 
     print "Takes a list of bitcoind options, addresses and a send amount and outputs a transaction in JSON \nUsage: cat generateTx.json | python generateTx.py\nRequires a fully-synced *local* bitcoind node"
@@ -27,11 +28,21 @@ listOptions = json.loads(str(''.join(JSON)))
 #sort out whether using local or remote API
 conn = bitcoinrpc.connect_to_local()
 
-#check if private key provided produces correct address
-address = pybitcointools.privkey_to_address(listOptions['from_private_key'])
-if not address == listOptions['transaction_from'] and not force:
-    print json.dumps({ "status": "NOT OK", "error": "Private key does not produce same address as \'transaction from\'" , "fix": "Set \'force\' flag to proceed without address checks" })
-    exit()
+#check for testnet addr
+privkey_char1 = listOptions['from_private_key'][0]
+if privkey_char1 == 'c' or privkey_char1 == '9':
+    testnet=True
+else:
+    testnet=False
+
+if testnet:
+    pass #do no check here
+else:
+    #check if private key provided produces correct address
+    address = pybitcointools.privkey_to_address(listOptions['from_private_key'])
+    if not address == listOptions['transaction_from'] and not force:
+        print json.dumps({ "status": "NOT OK", "error": "Private key does not produce same address as \'transaction from\'" , "fix": "Set \'force\' flag to proceed without address checks" })
+        exit()
 
 #see if account has been added
 account = conn.getaccount(listOptions['transaction_from'])
@@ -53,7 +64,8 @@ for unspent in unspent_tx:
    available_balance = unspent.amount + available_balance
 
 #check if minimum BTC balance is met
-if available_balance < Decimal(0.0006*3) and not force:
+print available_balance, 0.00006*3
+if available_balance < Decimal(0.00006*3) and not force:
     print json.dumps({ "status": "NOT OK", "error": "Not enough funds" , "fix": "Set \'force\' flag to proceed without balance checks" })
     exit()
 
@@ -65,11 +77,11 @@ elif not force:
     print json.dumps({ "status": "NOT OK", "error": "from address is invalid or hasn't been used on the network" , "fix": "Set \'force\' flag to proceed without balance checks" })
     exit()
 
-#find largest spendable input from UTXO
-largest_spendable_input = { "txid": "", "amount": Decimal(0) }
+#find spendable input from UTXO
+smallest_spendable_input = { "txid": "", "amount": Decimal(0) }
 for unspent in unspent_tx:
-    if unspent.amount > largest_spendable_input["amount"]:
-        largest_spendable_input = { "txid": unspent.txid, "amount": unspent.amount }
+    if Decimal(unspent.amount) > Decimal(0.0004) and (smallest_spendable_input['amount'] == Decimal(0) or unspent.amount < smallest_spendable_input['amount']):
+        smallest_spendable_input = { "txid": unspent.txid, "amount": unspent.amount }
 
 #real stuff happens here:
 
@@ -77,11 +89,12 @@ broadcast_fee = 0.0001
 output_minimum = 0.0006 #dust threshold
 
 fee_total = Decimal(0.0001) + Decimal(0.00006 * 4)
-change = largest_spendable_input['amount'] - fee_total
+change = smallest_spendable_input['amount'] - fee_total
 # calculate change : 
 # (total input amount) - (broadcast fee) - (total transaction fee)
 
-if Decimal(change) < Decimal(0) or fee_total > largest_spendable_input['amount'] and not force:
+print fee_total, smallest_spendable_input['amount']
+if (Decimal(change) < Decimal(0) or fee_total > smallest_spendable_input['amount']) and not force:
     print json.dumps({ "status": "NOT OK", "error": "Not enough funds" , "fix": "Set \'force\' flag to proceed without balance checks" })
     exit()
 
@@ -90,7 +103,7 @@ if Decimal(change) < Decimal(0) or fee_total > largest_spendable_input['amount']
 from_address = listOptions['transaction_from']
 transaction_type = 0   #simple send
 sequence_number = 1    #packet number
-currency_id = 1        #MSC
+currency_id = int(listOptions['currency'])        #MSC
 amount = int(listOptions['msc_send_amt']*1e8)  #maran's impl used float??
 
 cleartext_packet = ( 
@@ -113,21 +126,24 @@ msc_data_key = ''.join(map(lambda xor_target: hex(operator.xor(xor_target[0],xor
 obfuscated = "02" + msc_data_key + "00" 
 #add key identifier and ecdsa byte to new mastercoin data key
 
-invalid = True
-while invalid:
-    obfuscated_randbyte = obfuscated[:-2] + hex(random.randint(0,255))[2:].rjust(2,"0").upper()
-    #set the last byte to something random in case we generated an invalid pubkey
-    potential_data_address = pybitcointools.pubkey_to_address(obfuscated_randbyte)
-    if bool(conn.validateaddress(potential_data_address).isvalid):
-        data_pubkey = obfuscated_randbyte
-        invalid = False
-#make sure the public key is valid using pybitcointools, if not, regenerate 
-#the last byte of the key and try again
+if testnet:
+    data_pubkey = obfuscated[:-2] + hex(random.randint(0,255))[2:].rjust(2,"0").upper()
+else:
+    invalid = True
+    while invalid:
+        obfuscated_randbyte = obfuscated[:-2] + hex(random.randint(0,255))[2:].rjust(2,"0").upper()
+        #set the last byte to something random in case we generated an invalid pubkey
+        potential_data_address = pybitcointools.pubkey_to_address(obfuscated_randbyte)
+        if bool(conn.validateaddress(potential_data_address).isvalid):
+            data_pubkey = obfuscated_randbyte
+            invalid = False
+    #make sure the public key is valid using pybitcointools, if not, regenerate 
+    #the last byte of the key and try again
 
 #### Build transaction
 
 #retrieve raw transaction to spend it
-prev_tx = conn.getrawtransaction(largest_spendable_input['txid'])
+prev_tx = conn.getrawtransaction(smallest_spendable_input['txid'])
 
 validnextinputs = []                      #get valid redeemable inputs
 for output in prev_tx.vout:
@@ -136,7 +152,12 @@ for output in prev_tx.vout:
             if address == listOptions['transaction_from']:
                 validnextinputs.append({ "txid": prev_tx.txid, "vout": output['n']})
 
-validnextoutputs = { "1EXoDusjGwvnjZUyKkxZ4UHEf77z6A5S4P": 0.00006 , listOptions['transaction_to'] : 0.00006 }
+if testnet:
+    exodus = "n1eXodd53V4eQP96QmJPYTG2oBuFwbq6kL" 
+else:
+    exodus = "1EXoDusjGwvnjZUyKkxZ4UHEf77z6A5S4P"
+
+validnextoutputs = { exodus : 0.00006 , listOptions['transaction_to'] : 0.00006 }
 
 if change > Decimal(0.00006): # send anything above dust to yourself
     validnextoutputs[ listOptions['transaction_from'] ] = float(change) 
@@ -146,7 +167,7 @@ unsigned_raw_tx = conn.createrawtransaction(validnextinputs, validnextoutputs)
 json_tx =  conn.decoderawtransaction(unsigned_raw_tx)
 
 #add multisig output to json object
-json_tx['vout'].append({ "scriptPubKey": { "hex": "5141" + pubkey + "21" + data_pubkey.lower() + "52ae", "asm": "1 " + pubkey + " " + data_pubkey.lower() + " 2 OP_CHECKMULTISIG", "reqSigs": 1, "type": "multisig", "addresses": [ pybitcointools.pubkey_to_address(pubkey), pybitcointools.pubkey_to_address(data_pubkey) ] }, "value": 0.00006*2, "n": len(validnextoutputs)})
+json_tx['vout'].append({ "scriptPubKey": { "hex": "51" + HEXSPACE + pubkey + "21" + data_pubkey.lower() + "52ae", "asm": "1 " + pubkey + " " + data_pubkey.lower() + " 2 OP_CHECKMULTISIG", "reqSigs": 1, "type": "multisig", "addresses": [ pybitcointools.pubkey_to_address(pubkey), pybitcointools.pubkey_to_address(data_pubkey) ] }, "value": 0.00006*2, "n": len(validnextoutputs)})
 
 #construct byte arrays for transaction 
 #assert to verify byte lengths are OK

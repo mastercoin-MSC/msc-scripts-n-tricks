@@ -2,5 +2,6 @@
   "transaction_from": "{{MSC_ADDRESS_HERE}}",
   "transaction_to": "{{MSC_ADDRESS_HERE}}",
   "msc_send_amt": 0.0001,
+  "currency": 2,
   "from_private_key": "{{PVT_KEY_HERE}}"
 }

@@ -1,0 +1,11 @@
+{ 
+  "testnet": true,
+  "transaction_type": 21,
+  "currency_id_sale": 1,
+  "amount_for_sale": 50,
+  "currency_id_des": 2,
+  "amount_des": 100,
+  "action": 1,
+  "transaction_from": "address",
+  "from_private_key": "privkey"
+}

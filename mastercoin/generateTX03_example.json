@@ -1,0 +1,6 @@
+{ 
+  "transaction_from": "{{address here}}",
+  "msc_send_amt": 1.0,
+  "currency": 2,
+  "from_private_key": "{{ privkey here }}"
+}
