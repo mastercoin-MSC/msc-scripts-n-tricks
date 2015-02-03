@@ -1,0 +1,8 @@
+{ 
+  "transaction_type": 70,
+  "property_id": 'type: int, ex: 3',
+  "transaction_from": "type: base58  ,  The current Owner of the grant property",
+  "transaction_to": "null or base58  ,  The new Owner of the grant property",
+  "from_private_key": "type: base58",
+  "testnet": "type: bool"
+}
