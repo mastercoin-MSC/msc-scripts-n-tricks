@@ -12,6 +12,17 @@ def callCLI(txType):
   o['testnet']=process_bool( raw_input("Is this intended for Testnet? , required: [0=No, 1=Yes]") )
   o['conndetails']=process_daemon(raw_input("Is the BITCOIN DAEMON running on this machine? , required: [0=No, 1=Yes]"))
 
+  if txType == 0:
+    #o['transaction_type']=process_int(raw_input("Is this a GRANT or a REVOKE?, required: [55=Grant, 56=Revoke]"))
+    o['transaction_from']=process_address(raw_input("Please enter the MULTISIG ADDRESS that will be used in securing funds, required: "))
+    o['spending_txid']=process_txid(raw_input("Please enter a TRANSACTION ID that has enough Bitcoin to perform the transaction, required: "))
+    o['spending_txid_output']=process_decimal(raw_input("Please enter the TRANSACTION AMOUNT of the outpoint being spent, required: "))
+
+    o['property_id']=process_int(raw_input("Please enter the PROPERTY ID of the property you wish to send, required: "))
+    o['number_properties']=process_int(raw_input("Please enter the NUMBER OF PROPERTIES that will be sent, required: [satoshi amounts only, please] "))
+    o['redeemer_addr']=process_redeemer(raw_input("Please enter the REDEMPTION ADDRESS (if you own the private key) or the public key of an address that will be used to retreive multisignature outputs, optional: [default=1EXoDusjGwvnjZUyKkxZ4UHEf77z6A5S4P]"))
+    o['transaction_to']=process_address(raw_input("Please enter an ADDRESS that you wish to send to, required: "), 1)
+
   if txType == 54:
     o['ecosystem']=process_int(raw_input("Please enter the ECOSYSTEM you wish to generate a property for, required: [1=Main Ecosystem, 2=Test Ecosystem]"))
     o['property_type']=process_int(raw_input("Please enter the PROPERTY TYPE you wish your property to be, required: [1=Indivisible, 2=Divisible]"))
