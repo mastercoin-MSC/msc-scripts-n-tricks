@@ -13,7 +13,6 @@ def callCLI(txType):
   o['conndetails']=process_daemon(raw_input("Is the BITCOIN DAEMON running on this machine? , required: [0=No, 1=Yes]"))
 
   if txType == 0:
-    #o['transaction_type']=process_int(raw_input("Is this a GRANT or a REVOKE?, required: [55=Grant, 56=Revoke]"))
     o['transaction_from']=process_address(raw_input("Please enter the MULTISIG ADDRESS that will be used in securing funds, required: "))
     o['spending_txid']=process_txid(raw_input("Please enter a TRANSACTION ID that has enough Bitcoin to perform the transaction, required: "))
     o['spending_txid_output']=process_decimal(raw_input("Please enter the TRANSACTION AMOUNT of the outpoint being spent, required: "))
