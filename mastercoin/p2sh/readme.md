@@ -15,6 +15,12 @@ OR
 
 To do a grant & generate armory outputs:
 python2 generateGR_RV_P2SH.py -ui -armory
+
+OR
+
+To do a simple send & generate armory outputs:
+python2 generateSEND+P2SH.py -ui -armory
+
 ```
 either of these will start the flow
 
