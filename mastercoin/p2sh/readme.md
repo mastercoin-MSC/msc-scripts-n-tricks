@@ -1,5 +1,16 @@
 YOU NEED TO HAVE DONE THE FOLLOWING:
-*Added the p2sh address sending the transaction to the wallet using 'addmultisig'
+
+* Added the p2sh address sending the transaction to the wallet using 'addmultisig'
+* If you want to run the armory utils install the armory python libraries
+
+Modified from https://bitcoinarmory.com/building-from-source/
+```
+sudo apt-get install git-core build-essential pyqt4-dev-tools swig libqtcore4 libqt4-dev python-qt4 python-dev python-twisted python-psutil
+git clone git://github.com/etotheipi/BitcoinArmory.git
+cd BitcoinArmory
+make
+sudo make install
+```
 
 
 this script folder allows one to do p2sh transactions
