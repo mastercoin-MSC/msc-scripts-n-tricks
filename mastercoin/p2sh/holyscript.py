@@ -1,5 +1,6 @@
 import sys, pprint, textwrap
 sys.path.append('/opt/armory-git')
+sys.path.append('/usr/lib/armory/')
 from armoryengine.Transaction import *
 from armoryengine.ArmoryUtils import *
 
