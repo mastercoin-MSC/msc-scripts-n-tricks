@@ -274,6 +274,7 @@ for output in prev_tx.vout:
         for address in output['scriptPubKey']['addresses']:
             if address == listOptions['transaction_from']:
                 p2sh_rscript = conn.validateaddress(listOptions['transaction_from']).hex
+                p2sh_scriptPubkey = output['scriptPubKey']['hex']
                 validnextinputs.append({ "txid": prev_tx.txid, "vout": output['n'], "scriptPubKey": output['scriptPubKey']['hex'], "redeemScript": p2sh_rscript })
 if testnet:
     exodus="mpexoDuSkGGqvqrkrjiFng38QPkJQVFyqv"
@@ -417,8 +418,12 @@ if '-armory' in sys.argv:
   listOptions['spending_tx_raw'] = conn.getrawtransaction(listOptions['spending_txid'], False)
   listOptions['spending_tx_decoded'] = conn.decoderawtransaction(listOptions['spending_tx_raw'])
   listOptions['decoded_mptx'] = conn.decoderawtransaction(''.join(hex_transaction))
-  listOptions['p2sh_addr_pubkey']=(raw_input("Please enter the MULTISIG ADDRESS PUBLIC KEY (scriptPubkey) from the above that will be spent, required: ")) 
-  listOptions['p2sh_redeemscript']=(raw_input("Please enter the MULTISIG ADDRESS REDEEM SCRIPT from the above , required: "))  
+  listOptions['p2sh_addr_pubkey']=(raw_input("Please enter the MULTISIG ADDRESS PUBLIC KEY (scriptPubkey) from the above that will be spent, required:\n(Enter to use: "+str(p2sh_scriptPubkey)+")") or p2sh_scriptPubkey) 
+  #listOptions['p2sh_addr_pubkey']=p2sh_scriptPubkey
+  listOptions['p2sh_redeemscript']=(raw_input("Please enter the MULTISIG ADDRESS REDEEM SCRIPT from the above , required:\n(Enter to use: "+str(p2sh_rscript)+")") or p2sh_rscript)  
+  #listOptions['p2sh_redeemscript']=p2sh_rscript 
+    #= conn.validateaddress(listOptions['transaction_from']).hex
+
   rawhex = holyscript.holySignor(listOptions, ''.join(hex_transaction), testnet) 
 
   print ''
