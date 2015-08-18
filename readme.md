@@ -1,5 +1,14 @@
 ### msc scripts n tricks
 
+Dependencies:
+Several of these scripts reference additional python libraries. 
+bitcoin-python "http://laanwj.github.com/bitcoin-python/doc/"
+pybitcointools "http://github.com/vbuterin/pybitcointools"
+We recommend the installation of these via pip
+```
+pip install bitcoin-python pybitcointools
+```
+
 these are some scripts where it might be useful for developers to hack around with the protocol
 or just some hacks that might be useful
 
