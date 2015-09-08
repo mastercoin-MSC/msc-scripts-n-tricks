@@ -137,7 +137,7 @@ memo = listOptions['memo']
 #calculate bytes
 tx_ver_bytes = hex(transaction_version)[2:].rjust(4,"0") # 2 bytes
 tx_type_bytes = hex(transaction_type)[2:].rjust(4,"0")   # 2 bytes
-prop_id_bytes = hex(property_id)[2:].rjust(8,"0")  # 4 bytes
+prop_id_bytes = hex(property_id)[2:].rstrip("L").rjust(8,"0")  # 4 bytes
 num_prop_bytes = hex(number_properties)[2:].rjust(16,"0")# 8 bytes
 memo_bytes = ''                                     # var bytes
 
