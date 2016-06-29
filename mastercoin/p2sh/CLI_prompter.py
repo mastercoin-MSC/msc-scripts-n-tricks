@@ -49,6 +49,15 @@ def callCLI(txType):
     o['memo']=process_string( raw_input("Please enter any additional notes about your property if any, optional: [default='', max=255 characters]") )
     o['redeemer_addr']=process_redeemer(raw_input("Please enter the REDEMPTION ADDRESS (if you own the private key) or the public key of an address that will be used to retreive multisignature outputs, optional: [default=1EXoDusjGwvnjZUyKkxZ4UHEf77z6A5S4P]"))
     o['transaction_to']=process_address(raw_input("Please enter an ADDRESS that you wish to grant/revoke to, optional: "), 1)
+
+  if txType == 70:
+    o['transaction_from']=process_address(raw_input("Please enter the MULTISIG ADDRESS that will be used in securing funds, required: "))
+    o['spending_txid']=process_txid(raw_input("Please enter a TRANSACTION ID that has enough Bitcoin to perform the transaction, required: "))
+    o['spending_txid_output']=process_decimal(raw_input("Please enter the TRANSACTION AMOUNT of the outpoint being spent, required: "))
+
+    o['property_id']=process_int(raw_input("Please enter the PROPERTY ID of the property you wish to change the issuer, required: "))
+    o['redeemer_addr']=process_redeemer(raw_input("Please enter the REDEMPTION ADDRESS (if you own the private key) or the public key of an address that will be used to retreive multisignature outputs, optional: [default=1EXoDusjGwvnjZUyKkxZ4UHEf77z6A5S4P]"))
+    o['transaction_to']=process_address(raw_input("Please enter an ADDRESS that you wish to change the issuer to, required: "), 1)
     
   return o
 
